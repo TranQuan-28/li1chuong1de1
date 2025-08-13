@@ -1,0 +1,417 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiểm Tra Chương 1 - Vật Lí Nhiệt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Cài đặt chung & Nền --- */
+        :root {
+            --primary-color: #00aaff;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+            --background-start: #1a2a6c;
+            --background-end: #b21f1f;
+            --background-fallback: #1d2671;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #f0f0f0;
+            background-color: var(--background-fallback);
+            background-image: linear-gradient(45deg, var(--background-start), var(--background-end));
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            padding: 30px 15px;
+            min-height: 100vh;
+        }
+
+        /* --- Khung chính (Hiệu ứng thủy tinh mờ) --- */
+        #quiz-wrapper {
+            width: 100%;
+            max-width: 850px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px 40px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* --- Tiêu đề & Đồng hồ --- */
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+        }
+
+        #timer {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            display: inline-block;
+            letter-spacing: 2px;
+            transition: color 0.5s;
+        }
+
+        #timer.low-time {
+            color: var(--incorrect-color);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- Khối câu hỏi --- */
+        .question-block {
+            background: rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-color);
+            transition: transform 0.2s;
+        }
+        
+        .question-block:hover {
+            transform: translateY(-3px);
+        }
+
+        .question-block p {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        /* --- Tùy chỉnh Radio Button --- */
+        .option {
+            display: block;
+            position: relative;
+            padding: 10px 15px 10px 45px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: background-color 0.3s;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            height: 22px;
+            width: 22px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .option input:checked ~ .checkmark {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            top: 7px;
+            left: 7px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .option input:checked ~ .checkmark:after {
+            display: block;
+        }
+        
+        /* --- Kiểu dáng cho kết quả --- */
+        .option.correct {
+            background-color: rgba(40, 167, 69, 0.3);
+            border-left: 5px solid var(--correct-color);
+        }
+        .option.incorrect {
+            background-color: rgba(220, 53, 69, 0.3);
+            border-left: 5px solid var(--incorrect-color);
+        }
+        .option.correct .checkmark {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+        }
+
+
+        /* --- Nút bấm & Kết quả --- */
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 15px 35px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        #submit-btn {
+            background-image: linear-gradient(to right, #00c6ff 0%, #0072ff 51%, #00c6ff 100%);
+            background-size: 200% auto;
+        }
+
+        #submit-btn:hover {
+            background-position: right center;
+            transform: scale(1.05);
+        }
+
+        #retry-btn {
+            background-image: linear-gradient(to right, #8e9eab 0%, #eef2f3 51%, #8e9eab 100%);
+            color: #333;
+            background-size: 200% auto;
+        }
+        
+        #retry-btn:hover {
+            background-position: right center;
+            transform: scale(1.05);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        #results {
+            text-align: center;
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-size: 1.8em;
+            font-weight: 700;
+            display: none; /* Ẩn ban đầu */
+            color: #fff;
+            border-top: 3px solid var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-wrapper">
+    <header>
+        <h1>Kiểm Tra Chương 1 - Vật Lí Nhiệt</h1>
+        <div id="timer">60:00</div>
+    </header>
+    
+    <form id="quiz-form">
+        <!-- Các câu hỏi sẽ được JavaScript chèn vào đây -->
+    </form>
+
+    <div class="button-container">
+        <button type="button" id="submit-btn">Nộp bài</button>
+        <button type="button" id="retry-btn">Làm lại</button>
+    </div>
+
+    <div id="results">
+        <!-- Kết quả sẽ được hiển thị ở đây -->
+    </div>
+</div>
+
+<script>
+// --- JavaScript để xử lý logic bài kiểm tra ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Dữ liệu 33 câu hỏi
+    const quizData = [
+        { question: 'Câu 1: Nhiệt độ không tuyệt đối là', options: ['0°C.', '0 Κ.', '0°F.', '273 K.'], answer: '0 Κ.' },
+        { question: 'Câu 2: Vật nào sau đây không có cấu trúc mạng tinh thể?', options: ['Hạt muối ăn.', 'Viên kim cương.', 'Mẫu thạch anh.', 'Viên sôcôla.'], answer: 'Viên sôcôla.' },
+        { question: 'Câu 3: Không xảy ra sự truyền nhiệt giữa hai vật tiếp xúc vì chúng có cùng', options: ['nhiệt độ.', 'nội năng.', 'thể tích.', 'nhiệt dung riêng.'], answer: 'nhiệt độ.' },
+        { question: 'Câu 4: Trong trường hợp nào sau đây, nhiệt dung riêng của chất sẽ thay đổi?', options: ['Chiếc ly bị vỡ thành nhiều mảnh.', 'Khối sắt được làm thành chiếc cuốc.', 'Nước ở 15°C thành nước ở 45°C.', 'Nước đông đặc thành nước đá.'], answer: 'Nước đông đặc thành nước đá.' },
+        { question: 'Câu 5: Một cốp ô tô được trang bị thiết bị giữ nắp cốp... Giả sử không có sự trao đổi nhiệt... Quá trình này, khí', options: ['nhận công và động năng trung bình của các phân tử khí giảm.', 'nhận công và động năng trung bình của các phân tử khí tăng.', 'thực hiện công và động năng trung bình của các phân tử khí tăng.', 'thực hiện công và động năng trung bình của các phân tử khí giảm.'], answer: 'thực hiện công và động năng trung bình của các phân tử khí giảm.' },
+        { question: 'Câu 6: Vào buổi sáng, sương trên lá hóa hơi thành hơi nước dưới ánh nắng mặt trời. Trong quá trình này, giữa các phân tử nước có', options: ['lực hút và lực đẩy phân tử đều yếu đi.', 'lực hút phân tử mạnh lên còn lực đẩy phân tử yếu đi.', 'lực hút và lực đẩy phân tử đều mạnh lên.', 'lực hút phân tử yếu đi còn lực đẩy phân tử mạnh lên.'], answer: 'lực hút và lực đẩy phân tử đều yếu đi.' },
+        { question: 'Câu 7: Về cấu trúc vi mô của chất lỏng, phát biểu nào sau đây là đúng?', options: ['Các phân tử chất lỏng dao động nhưng không có vị trí cân bằng xác định.', 'Khoảng cách giữa các phân tử chất lỏng rất lớn và lực tương tác giữa chúng rất yếu.', 'Các phân tử chất lỏng sắp xếp có trật tự tạo thành mạng tinh thể.', 'Các phân tử chất lỏng chuyển động hỗn loạn về mọi phía, chiếm không gian bình chứa.'], answer: 'Các phân tử chất lỏng dao động nhưng không có vị trí cân bằng xác định.' },
+        { question: 'Câu 8: Hiện tượng nào sau đây không thuộc về biến đổi nội năng do thực hiện công?', options: ['Lưỡi cưa nóng lên khi cưa gỗ.', 'Quẹt diêm vào thân bao diêm làm đầu diêm bốc cháy.', 'Hà hơi vào lòng bàn tay trong mùa đông làm cho bàn tay ấm lên.', 'Khi dòng điện chạy qua dây dẫn thì dây dẫn nóng lên.'], answer: 'Hà hơi vào lòng bàn tay trong mùa đông làm cho bàn tay ấm lên.' },
+        { question: 'Câu 9: Trong một quá trình nén khí thì khí nhận công 800 J đồng thời khí tỏa nhiệt lượng 200 J. Nội năng của khí', options: ['giảm đi 600 J.', 'tăng lên 600 J.', 'giảm đi 1000 J.', 'tăng lên 1000 J.'], answer: 'tăng lên 600 J.' },
+        { question: 'Câu 10: Đặt một khối sắt có khối lượng 6 kg ở 20°C vào nước sôi... Nhiệt lượng mà nước đã tỏa ra là', options: ['25 kJ.', '36 kJ.', '45 kJ.', '54 kJ.'], answer: '54 kJ.' },
+        { question: 'Câu 11: Phát biểu nào sau đây là đúng?', options: ['Nội năng của 1 g nước ở 0°C nhỏ hơn nội năng của 1 g nước đá ở 0°C.', 'Dòng điện làm nóng điện trở khi chạy qua là quá trình truyền nhiệt.', 'Khi thể tích chất khí tăng lên thì nội năng của nó giảm.', 'Khi dây cao su bị kéo dãn thì thế năng phân tử tăng lên.'], answer: 'Khi dây cao su bị kéo dãn thì thế năng phân tử tăng lên.' },
+        { question: 'Câu 12: Thả một miếng sắt nặng 290 g... vào glycerin... Nhiệt dung riêng của glycerin là', options: ['2305 J.kg⁻¹.K⁻¹.', '4150 J.kg⁻¹.K⁻¹.', '1805 J.kg⁻¹.K⁻¹.', '3204 J.kg⁻¹.K⁻¹.'], answer: '2305 J.kg⁻¹.K⁻¹.' },
+        { question: 'Câu 13: Bạn Anh Dũng thiết lập thang nhiệt độ... Nhiệt độ Celsius của cốc nước này là', options: ['30°C.', '40°C.', '50°C.', '60°C.'], answer: '50°C.' },
+        { question: 'Câu 14: Ấm điện của nhà bạn Anh Quân... ấm điện vào mùa đông sẽ tiêu thụ nhiều điện hơn... là', options: ['140 kJ.', '150 kJ.', '143 kJ.', '145 kJ.'], answer: '140 kJ.' },
+        { question: 'Câu 15: Bình 1 và bình 2 đựng chất lỏng... Giá trị của t₁ và t₂ lần lượt là', options: ['20°C và 60°C.', '12°C và 60°C.', '12°C và 80°C.', '20°C và 80°C.'], answer: '20°C và 80°C.' },
+        { question: 'Câu 16: Giữa các phân tử có lực hút và lực đẩy. Phát biểu nào sau đây là đúng?', options: ['Lực hút giữa các phân tử trong chất rắn luôn mạnh hơn so với lực đẩy.', 'Khí có thể lấp đầy bất kì bình chứa vì lực đẩy giữa các phân tử mạnh hơn lực hút.', 'Cả lực hút phân tử và lực đẩy phân tử đều yếu đi khi khoảng cách giữa các phân tử tăng lên.', 'Lực hút phân tử mạnh lên và lực đẩy phân tử yếu đi khi khoảng cách giữa các phân tử tăng lên.'], answer: 'Cả lực hút phân tử và lực đẩy phân tử đều yếu đi khi khoảng cách giữa các phân tử tăng lên.' },
+        { question: 'Câu 17: Phát biểu nào sau đây là đúng về nội năng?', options: ['Nội năng là tổng động năng và thế năng của các phân tử cấu tạo nên vật.', 'Khi nội năng của vật tăng thì nhiệt độ phải tăng.', 'Khi nước đóng băng, nội năng của nó bằng không.', 'Nhiệt luôn truyền từ vật cho nội năng lớn hơn sang vật có nội năng nhỏ hơn.'], answer: 'Nội năng là tổng động năng và thế năng của các phân tử cấu tạo nên vật.' },
+        { question: 'Câu 18: Phát biểu nào sau đây là đúng khi nói về nhiệt độ và thang đo nhiệt độ?', options: ['33°C = 240 K.', 'Nhiệt độ thay đổi 1°C cũng có nghĩa nhiệt độ thay đổi 1 K.', 'Nhiệt độ theo thang đo nhiệt độ Celsius và Kelvin đều có thể nhận giá trị âm.', 'Nhiệt độ tăng từ t(°C) lên 2t (°C) cũng có nghĩa nhiệt độ tăng từ T (K) lên 2T (K).'], answer: 'Nhiệt độ thay đổi 1°C cũng có nghĩa nhiệt độ thay đổi 1 K.' },
+        { question: 'Câu 19: Khi nước đá ở 0°C tan chảy thành nước ở 0°C thì...', options: ['động năng trung bình của các phân tử tăng nhưng thế năng của các phân tử không đổi.', 'động năng trung bình của các phân tử không đổi và thế năng của các phân tử tăng lên.', 'cả động năng trung bình và thế năng phân tử của các phân tử đều tăng.', 'cả động năng trung bình và thế năng phân tử của các phân tử đều giảm.'], answer: 'động năng trung bình của các phân tử không đổi và thế năng của các phân tử tăng lên.' },
+        { question: 'Câu 20: Phát biểu nào sau đây về sự bay hơi và sự sôi là sai?', options: ['Sự bay hơi có thể xảy ra ở mọi nhiệt độ.', 'Sự sôi xảy ra ở nhiệt độ sôi.', 'Sự bay hơi và sự sôi đều chỉ xảy ra ở mặt thoáng chất lỏng.', 'Nhiệt độ sôi phụ thuộc vào áp suất khí trên mặt thoáng, áp suất càng cao thì nhiệt độ sôi càng cao.'], answer: 'Sự bay hơi và sự sôi đều chỉ xảy ra ở mặt thoáng chất lỏng.' },
+        { question: 'Câu 21: Biết hằng số Avogadro, để ước tính khối lượng nguyên tử đồng, chúng ta cần biết...', options: ['Khối lượng và thể tích của một lượng chất đồng.', 'Khối lượng riêng của đồng và khối lượng của một lượng chất đồng.', 'Thể tích mol và khối lượng riêng của đồng.', 'Thể tích mol của đồng và khối lượng của một lượng chất đồng.'], answer: 'Thể tích mol và khối lượng riêng của đồng.' },
+        { question: 'Câu 22: Một hệ nhận nhiệt lượng 2500 J và nhận công 1800 J thì nội năng của hệ...', options: ['tăng 700 J.', 'tăng 4300 J.', 'giảm 4300 J.', 'giảm 700 J.'], answer: 'tăng 4300 J.' },
+        { question: 'Câu 23: Phát biểu nào sau đây là đúng?', options: ['Động năng trung bình của các phân tử trong chất rắn kết tinh không đổi khi nó nóng chảy.', 'Nội năng của nước ở 0°C và nước đá ở 0°C có cùng khối lượng là như nhau.', 'Vật có nhiệt độ cao hơn phải có nội năng lớn hơn vật có nhiệt độ thấp hơn.', 'Khi hai vật cân bằng nhiệt thì chúng có nội năng bằng nhau.'], answer: 'Động năng trung bình của các phân tử trong chất rắn kết tinh không đổi khi nó nóng chảy.' },
+        { question: 'Câu 24: Hydrogen lỏng... Số phân tử có trong 1 lít hydrogen lỏng là...', options: ['4,27.10²³', '2,13.10²³', '4,27.10²⁵', '2,13.10²⁵.'], answer: '2,13.10²⁵.' },
+        { question: 'Câu 25: Liên hệ nhiệt độ giữa thang Celsius và thang Fahrenheit... Nếu nhiệt độ... tăng 60°C thì theo thang Fahrenheit tăng...', options: ['60°F.', '140°F.', '33°F.', '108°F.'], answer: '108°F.' },
+        { question: 'Câu 26: Trộn 20 g nước ở 30°C với chất nào dưới đây thì nhiệt độ khi cân bằng nhiệt cao nhất?', options: ['20 g nước ở 40°C', '40 g nước ở 35°C', '10 g nước ở 50°C.', '4 g nước ở 80°C'], answer: '4 g nước ở 80°C' },
+        { question: 'Câu 27: Một viên đạn chì... nhiệt độ của nó tăng lên...', options: ['100°C', '200°C.', '125°C.', '150°C.'], answer: '150°C.' },
+        { question: 'Câu 28: Thả 5 g nước đá ở -20°C vào 5 g nước ở 30°C... Nhiệt độ của hỗn hợp khi cân bằng nhiệt là...', options: ['0°C.', '5°C.', '2,5°C', '1,5°C.'], answer: '0°C.' },
+        { question: 'Câu 29: Những nghệ nhân ở vùng Kanazawa... chứa số nguyên tử vàng là...', options: ['4,72.10¹⁹.', '4,72.10¹⁶.', '4,72.10¹³.', '4,72.10²².'], answer: '4,72.10¹⁹.' },
+        { question: 'Câu 30: Một quả cầu kim loại nặng 192 g... Nhiệt dung riêng của kim loại làm quả cầu là...', options: ['1232 J.kg⁻¹.K⁻¹.', '458 J.kg⁻¹.K⁻¹.', '654 J.kg⁻¹.K⁻¹.', '916 J.kg⁻¹.K⁻¹.'], answer: '916 J.kg⁻¹.K⁻¹.' },
+        { question: 'Câu 31: Hơi nước ở 100°C được dẫn vào 22 g nước... khối lượng của nước có trong bình là...', options: ['24,8 g.', '24,0 g.', '36,6 g.', '30 g.'], answer: '24,8 g.' },
+        { question: 'Câu 32: Dẫn m (kg) hơi nước ở 100°C vào 1 kg nước đá ở 0°C... Giá trị của m là...', options: ['0,36 kg.', '0,42 kg.', '0,18 kg.', '0,27 kg.'], answer: '0,18 kg.' },
+        { question: 'Câu 33: Một bình cách nhiệt... Khối lượng nước đá tạo thành bằng bao nhiêu % khối lượng nước ban đầu?', options: ['87%.', '13%.', '85%.', '15%.'], answer: '87%.' }
+    ];
+
+    const quizForm = document.getElementById('quiz-form');
+    const resultsContainer = document.getElementById('results');
+    const submitButton = document.getElementById('submit-btn');
+    const retryButton = document.getElementById('retry-btn');
+    const timerElement = document.getElementById('timer');
+    let timerInterval;
+
+    function buildQuiz() {
+        const output = [];
+        quizData.forEach((currentQuestion, questionNumber) => {
+            const options = [];
+            currentQuestion.options.forEach(optionText => {
+                options.push(
+                    `<label class="option">
+                        <input type="radio" name="question${questionNumber}" value="${optionText}">
+                        <span class="checkmark"></span>
+                        ${optionText}
+                    </label>`
+                );
+            });
+            output.push(
+                `<div class="question-block">
+                    <p>${currentQuestion.question}</p>
+                    <div class="options-container">${options.join('')}</div>
+                </div>`
+            );
+        });
+        quizForm.innerHTML = output.join('');
+    }
+
+    function showResults() {
+        clearInterval(timerInterval);
+        timerElement.classList.remove('low-time');
+        
+        const answerContainers = quizForm.querySelectorAll('.options-container');
+        let numCorrect = 0;
+
+        quizData.forEach((currentQuestion, questionNumber) => {
+            const answerContainer = answerContainers[questionNumber];
+            const selector = `input[name=question${questionNumber}]:checked`;
+            const userAnswerNode = answerContainer.querySelector(selector);
+
+            // Vô hiệu hóa tất cả các input để không thể thay đổi
+            answerContainer.querySelectorAll('input').forEach(input => {
+                input.disabled = true;
+            });
+
+            if (userAnswerNode) {
+                const userAnswer = userAnswerNode.value;
+                const parentLabel = userAnswerNode.parentElement;
+                if (userAnswer === currentQuestion.answer) {
+                    numCorrect++;
+                    parentLabel.classList.add('correct');
+                } else {
+                    parentLabel.classList.add('incorrect');
+                    // Hiển thị đáp án đúng nếu trả lời sai
+                    const correctOption = Array.from(answerContainer.querySelectorAll('input')).find(input => input.value === currentQuestion.answer);
+                    if (correctOption) {
+                        correctOption.parentElement.classList.add('correct');
+                    }
+                }
+            } else {
+                 // Nếu người dùng không trả lời, vẫn hiển thị đáp án đúng
+                 const correctOption = Array.from(answerContainer.querySelectorAll('input')).find(input => input.value === currentQuestion.answer);
+                 if (correctOption) {
+                    correctOption.parentElement.classList.add('correct');
+                 }
+            }
+        });
+
+        resultsContainer.innerHTML = `Điểm của bạn: ${numCorrect} / ${quizData.length}`;
+        resultsContainer.style.display = 'block';
+        submitButton.disabled = true;
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function startTimer() {
+        let time = 60 * 60; // 60 phút
+        timerInterval = setInterval(() => {
+            const minutes = Math.floor(time / 60);
+            let seconds = time % 60;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            timerElement.textContent = `${minutes}:${seconds}`;
+            
+            if (time <= 300 && !timerElement.classList.contains('low-time')) { // 5 phút cuối
+                timerElement.classList.add('low-time');
+            }
+            
+            if (time < 0) {
+                clearInterval(timerInterval);
+                alert("Đã hết giờ làm bài! Bài của bạn sẽ được nộp tự động.");
+                showResults();
+            } else {
+                time--;
+            }
+        }, 1000);
+    }
+
+    function retryQuiz() {
+        location.reload();
+    }
+
+    buildQuiz();
+    startTimer();
+
+    submitButton.addEventListener('click', showResults);
+    retryButton.addEventListener('click', retryQuiz);
+});
+</script>
+
+</body>
+</html>

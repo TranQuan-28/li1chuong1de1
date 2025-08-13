@@ -1,0 +1,520 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đề Kiểm Tra Toàn Diện Chương 1 - Vật Lý Nhiệt - Đề Số 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff4081; /* Pink */
+            --secondary-color: #7c4dff; /* Purple */
+            --correct-color: #00e676; /* Green */
+            --incorrect-color: #ff5252; /* Red */
+            --background-start: #141e30;
+            --background-end: #243b55;
+            --surface-color: rgba(255, 255, 255, 0.07);
+            --text-color: #f5f5f5;
+            --text-secondary-color: #bdbdbd;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-color);
+            background-color: var(--background-start);
+            background-image: linear-gradient(to right top, #6d327c, #485DA6, #00a1ba, #00BF98, #36C486);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        #quiz-wrapper {
+            width: 100%;
+            max-width: 950px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px 40px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 5px #fff, 0 0 10px var(--primary-color), 0 0 15px var(--primary-color);
+        }
+
+        #timer {
+            font-size: 2.4em;
+            font-weight: 700;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: var(--surface-color);
+            border-radius: 10px;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        #timer.low-time {
+            color: var(--incorrect-color);
+            animation: pulse 1.2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 5px rgba(255, 82, 82, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 82, 82, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 5px rgba(255, 82, 82, 0.5); }
+        }
+
+        .part-title {
+            font-size: 1.6em;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .question-block {
+            background: var(--surface-color);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            border-left: 4px solid transparent;
+            transition: border-color 0.3s;
+        }
+        .question-block:hover {
+            border-left-color: var(--primary-color);
+        }
+        
+        .question-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .unanswered-mark {
+            color: var(--incorrect-color);
+            font-weight: bold;
+            font-size: 1.2em;
+            display: inline;
+            margin-left: 8px;
+        }
+        
+        /* Multiple Choice & True/False */
+        .option {
+            display: block;
+            position: relative;
+            padding: 12px 15px 12px 45px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .checkmark {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            height: 20px;
+            width: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        .option input:checked ~ .checkmark {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            top: 6px;
+            left: 6px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+        }
+        .option input:checked ~ .checkmark:after {
+            display: block;
+        }
+        .sub-question {
+            padding: 10px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .sub-question:first-child { border-top: none; }
+        .sub-question-text { margin-bottom: 10px; }
+        
+        /* Short Answer */
+        .short-answer-container input {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1em;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .correct-answer-display {
+            font-weight: bold;
+            color: var(--correct-color);
+            display: none;
+            margin-top: 8px;
+        }
+
+        /* Result styling */
+        .correct { background-color: rgba(0, 230, 118, 0.15) !important; }
+        .incorrect { background-color: rgba(255, 82, 82, 0.15) !important; }
+        .correct .checkmark { background-color: var(--correct-color) !important; border-color: var(--correct-color) !important; }
+        input[type="text"].correct { border-color: var(--correct-color); }
+        input[type="text"].incorrect { border-color: var(--incorrect-color); }
+
+        /* Buttons & Final Result */
+        .button-container { text-align: center; margin-top: 40px; }
+        button {
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            color: white;
+            text-transform: uppercase;
+        }
+        #submit-btn { background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); }
+        #submit-btn:hover { box-shadow: 0 0 20px var(--primary-color); transform: translateY(-2px); }
+        #retry-btn { background: #6c757d; }
+        #retry-btn:hover { background: #5a6268; transform: translateY(-2px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        #results {
+            text-align: center;
+            margin-top: 30px;
+            padding: 25px;
+            background: var(--surface-color);
+            border-radius: 12px;
+            font-size: 1.8em;
+            font-weight: 700;
+            display: none;
+            border-top: 3px solid var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-wrapper">
+    <header>
+        <h1>Kiểm Tra Toàn Diện Chương 1 - Vật Lý Nhiệt</h1>
+        <div id="timer">45:00</div>
+    </header>
+    
+    <form id="quiz-form">
+        <!-- Quiz content will be injected here -->
+    </form>
+
+    <div class="button-container">
+        <button type="button" id="submit-btn">Nộp bài</button>
+        <button type="button" id="retry-btn">Làm lại</button>
+    </div>
+
+    <div id="results"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Dữ liệu bài kiểm tra (đã loại bỏ các câu cần hình ảnh) ---
+    const quizData = [
+        {
+            part: 'Phần I: Trắc nghiệm nhiều lựa chọn',
+            questions: [
+                { type: 'mc', title: 'Câu 1: Mô hình động học phân tử cho biết các chất được cấu tạo từ', options: ['các electron, ion dương, ion âm.', 'các electron, proton và neutron.', 'các hạt riêng biệt.', 'các hạt không riêng biệt.'], answer: 'các hạt riêng biệt.' },
+                { type: 'mc', title: 'Câu 2: Nhiệt nóng chảy riêng của đồng là 1,8.10⁵ J/kg có ý nghĩa gì?', options: ['Mỗi kilôgam đồng toả ra nhiệt lượng 1,8.10⁵ J khi hoá lỏng hoàn toàn.', 'Khối đồng cần thu nhiệt lượng 1,8.10⁵ J để hoá lỏng.', 'Khối đồng sẽ toả ra nhiệt lượng 1,8.10⁵ J khi nóng chảy hoàn toàn.', 'Mỗi kilôgam đồng cần thu nhiệt lượng 1,8.10⁵ J để hoá lỏng hoàn toàn ở nhiệt độ nóng chảy.'], answer: 'Mỗi kilôgam đồng cần thu nhiệt lượng 1,8.10⁵ J để hoá lỏng hoàn toàn ở nhiệt độ nóng chảy.' },
+                { type: 'mc', title: 'Câu 3: Liên hệ giữa nhiệt độ theo thang Ken-vin và nhiệt độ theo thang Xen-xi-út (khi làm tròn số) là', options: ['T(K) = t(°C) - 273.', 'T(K) = t(°C) + 273.', 'T(K) = t(°C) / 273', 'T(K) = 273 . t(°C).'], answer: 'T(K) = t(°C) + 273.' },
+                { type: 'mc', title: 'Câu 4: Biết nhiệt hóa hơi riêng của nước là L = 2,3.10⁶ J/kg. Nhiệt lượng cần cung cấp để làm bay hơi hoàn toàn 100 g nước ở 100°C là', options: ['2,3.10⁵ J.', '2,3.10⁶ J.', '0,23.10⁴ J.', '23.10⁶ J.'], answer: '2,3.10⁵ J.' },
+                { type: 'mc', title: 'Câu 5: Trong quá trình chất khí nhận nhiệt lượng Q và sinh công A, nội năng của một lượng khí biến thiên một lượng ΔU = A + Q. Khi đó, A và Q phải thỏa mãn điều kiện nào dưới đây?', options: ['Q > 0 và A < 0', 'Q > 0 và A > 0', 'Q < 0 và A > 0', 'Q < 0 và A < 0'], answer: 'Q > 0 và A < 0' },
+                { type: 'mc', title: 'Câu 6: Cho hai vật A và B tiếp xúc nhau. Nhiệt chỉ tự truyền từ A sang B khi', options: ['A và B là hai vật rắn.', 'nhiệt độ của A và của B bằng nhau.', 'ở nhiệt độ của A lớn hơn nhiệt độ của B.', 'khối lượng của A lớn hơn khối lượng của B.'], answer: 'ở nhiệt độ của A lớn hơn nhiệt độ của B.' },
+                { type: 'mc', title: 'Câu 7: Các vật không thể có nhiệt độ thấp hơn', options: ['0°C', '100°C', '100 K', '0 K'], answer: '0 K' },
+                { type: 'mc', title: 'Câu 8: Chọn câu đúng. Trong quá trình hóa hơi một lượng chất lỏng tinh khiết ở nhiệt độ sôi,', options: ['nhiệt độ của chất lỏng tăng liên tục.', 'thể tích khối chất lỏng không thay đổi.', 'nhiệt độ của chất lỏng giảm liên tục.', 'nhiệt độ chất lỏng không thay đổi.'], answer: 'nhiệt độ chất lỏng không thay đổi.' },
+                { type: 'mc', title: 'Câu 9: Một nhiệt kế bị hỏng có hai nhiệt độ làm mốc là: điểm đóng băng của nước tinh khiết và điểm sôi của nước tinh khiết ở áp suất tiêu chuẩn lần lượt là -2°C và 102°C. Nếu số chỉ nhiệt độ đo này là 50°C thì nhiệt độ đúng trong thang Celsius là bao nhiêu?', options: ['50°C', '48°C', '55°C', '52°C'], answer: '50°C' },
+                { type: 'mc', title: 'Câu 10: Để diệt trừ các bào tử nấm... người nông dân đã sử dụng một kinh nghiệm dân gian là ngâm chúng vào trong nước ấm theo công thức “hai sôi, ba lạnh”... Chọn biểu thức đúng.', options: ['Tₐ = (200 + 3Tₗ)/2', 'Tₐ = (200 + 2Tₗ)/3', 'Tₐ = (100 + 3Tₗ)/2', 'Tₐ = (200 + 3Tₗ)/5'], answer: 'Tₐ = (200 + 3Tₗ)/5' },
+                { type: 'mc', title: 'Câu 11: Hai quả cầu đặc đồng chất (1) và (2) bằng đồng có bán kính r₂ = 1,5r₁. Tỉ số nhiệt lượng cần cung cấp cho quả cầu 2 so với qua cầu 1 để cùng tăng nhiệt độ 1 K là', options: ['9/4', '8/27', '4/9', '27/8'], answer: '27/8' },
+                { type: 'mc', title: 'Câu 12: Hơ nóng một khối khí trong ống nghiệm có nút đậy kín... Hiện tượng nút bị đẩy bật ra khỏi ống là do', options: ['nội năng của chất khí giảm xuống.', 'nội năng của chất khí bị mất đi.', 'nội năng của chất khí không thay đổi.', 'nội năng của chất khí tăng lên.'], answer: 'nội năng của chất khí tăng lên.' },
+                { type: 'mc', title: 'Câu 13: Vì sao ở cùng nhiệt độ 100°C (ở áp suất thông thường) nhưng bỏng do hơi nước nóng thường nguy hiểm hơn bỏng do nước nóng đối với người bị bỏng?', options: ['Vì hơi nước nóng có vùng lan tỏa rộng hơn trên cơ thể.', 'Vì hơi nước nóng có khả năng truyền nhiệt nhanh hơn nước nóng.', 'Vì hơi nước nóng chứa nhiều hơi nước hơn nước nóng.', 'Vì khi hơi nước ngưng tụ trên da, nó sẽ truyền nhiệt thêm vào da.'], answer: 'Vì khi hơi nước ngưng tụ trên da, nó sẽ truyền nhiệt thêm vào da.' },
+                { type: 'mc', title: 'Câu 14: Một người cọ xát một miếng sắt có khối lượng 400 g trên một sàn nhà. Sau một thời gian miếng sắt nóng thêm 17°C... Nhiệt độ của miếng sắt đã tăng bao nhiêu Kelvin sau thời gian đó?', options: ['17 Κ.', '116 Κ.', '290 K.', '6,8 K.'], answer: '17 Κ.' },
+                { type: 'mc', title: 'Câu 15: Công mà người này đã thực hiện là (tiếp câu 14)', options: ['1251 J.', '3067 J.', '5128 J.', '7820 J.'], answer: '7820 J.' },
+                { type: 'mc', title: 'Câu 16: Người ta cung cấp một nhiệt lượng 1,5 J cho chất khí đựng trong một xilanh đặt nằm ngang. Khi nở ra đẩy pittông di chuyển đều một đoạn 5 cm. Biết lực ma sát giữa pittông và xilanh có độ lớn 20 N. Độ biến thiên nội năng của chất khí là', options: ['-1,5 J.', '0,5 J.', '1,5 J.', '-0,5 J.'], answer: '0,5 J.' }
+            ]
+        },
+        {
+            part: 'Phần II: Trắc nghiệm Đúng - Sai',
+            questions: [
+                {
+                    type: 'true-false',
+                    title: 'Câu 17: Một học sinh thực hiện thí nghiệm nung nóng chảy một mẫu chất rắn kết tinh. Bảng bên dưới ghi lại nhiệt độ của mẫu chất theo thời gian...',
+                    sub_questions: [
+                        { text: 'a) Ở phút thứ 5, mẫu chất tồn tại ở thể rắn.', answer: true },
+                        { text: 'b) Ở phút thứ 15, mẫu chất tồn tại đồng thời ở thể rắn và thể lỏng.', answer: true },
+                        { text: 'c) Nhiệt độ nóng chảy của chất rắn là 80°C.', answer: true },
+                        { text: 'd) Từ phút thứ 10 đến phút thứ 20, mẫu chất không nhận nhiệt.', answer: false }
+                    ]
+                },
+                {
+                    type: 'true-false',
+                    title: 'Câu 18: Một viên đạn bằng bạc có m = 2 g đang bay với vận tốc 200 m/s thì va chạm vào một bức tường gỗ và nằm yên trong bức tường...',
+                    sub_questions: [
+                        { text: 'a) Động năng của viên đạn ngay trước khi va chạm với tường bằng 40 J.', answer: true },
+                        { text: 'b) Khi bị bức tường giữ lại, viên đạn sinh công có độ lớn 20 J.', answer: false },
+                        { text: 'c) Độ tăng nội năng của viên đạn bằng 40 J.', answer: true },
+                        { text: 'd) Nhiệt độ của viên đạn sẽ tăng thêm 90°C.', answer: false }
+                    ]
+                }
+            ]
+        },
+        {
+            part: 'Phần III: Câu trả lời ngắn',
+            questions: [
+                { type: 'short-answer', title: 'Câu 19: ...n là số tiếng dế kêu trong thời gian 60 s... Nếu trong đêm bạn ngồi nghe tiếng dế kêu bạn đếm được 168 lần trong thời gian 2 phút thì nhiệt độ ngoài trời sẽ khoảng bao nhiêu độ C? (Làm tròn đến chữ số thứ 1 sau dấu phẩy).', answer: 15.3 },
+                { type: 'short-answer', title: 'Câu 20: ...đúc một chiếc chuông đồng 1000 kg... Tính nhiệt lượng đồng cần thu vào từ lúc bắt đầu nung tới khi đồng hóa lỏng hoàn toàn (theo đơn vị 10⁸ J và làm tròn đến chữ số thứ 2 sau dấu phẩy).', answer: 5.79 },
+                { type: 'short-answer', title: 'Câu 21: Em hãy tính lượng than cần thiết để đúc được chuông đồng theo đơn vị kg? (Kết quả làm tròn đến chữ số thứ 1 sau dấu phẩy).', answer: 96.4 },
+                { type: 'short-answer', title: 'Câu 22: Có 0,50 lít nước ở nhiệt độ 30,0°C, nhiệt lượng tổng cộng cần cung cấp để nó biến hoàn toàn thành hơi ở nhiệt độ sôi 100,0°C là bao nhiêu MJ? (làm tròn kết quả đến chữ số hàng phần mười).', answer: 1.3 },
+                { type: 'short-answer', title: 'Câu 23: Người ta thả một miếng đồng khối lượng 0,50 kg vào 0,50 kg nước. Miếng đồng nguội đi từ 89°C xuống 21°C. Hỏi nước nóng lên thêm bao nhiêu °C (làm tròn kết quả đến chữ số hàng phần mười)?', answer: 6.2 }
+            ]
+        }
+    ];
+
+    const quizForm = document.getElementById('quiz-form');
+    const resultsContainer = document.getElementById('results');
+    const submitButton = document.getElementById('submit-btn');
+    const retryButton = document.getElementById('retry-btn');
+    const timerElement = document.getElementById('timer');
+    let timerInterval;
+    let totalPoints = 0;
+
+    function buildQuiz() {
+        let questionCounter = 0;
+        const output = [];
+        quizData.forEach(partData => {
+            output.push(`<h2 class="part-title">${partData.part}</h2>`);
+            partData.questions.forEach(q => {
+                questionCounter++;
+                let questionHtml = `<div class="question-block" data-question-id="q${questionCounter}">
+                                        <div class="question-title">${q.title}</div>`;
+
+                if (q.image) {
+                    questionHtml += `<div class="image-container"><img src="${q.image}" alt="Hình minh họa cho ${q.title}" class="question-image"></div>`;
+                }
+
+                if (q.type === 'mc') {
+                    totalPoints++;
+                    const optionsHtml = q.options.map(option => `
+                        <label class="option">
+                            <input type="radio" name="q${questionCounter}" value="${option}">
+                            <span class="checkmark"></span>
+                            <span>${option}</span>
+                        </label>
+                    `).join('');
+                    questionHtml += `<div class="options-container">${optionsHtml}</div>`;
+                } else if (q.type === 'true-false') {
+                    const subQuestionsHtml = q.sub_questions.map((sub, subIndex) => {
+                        totalPoints++;
+                        return `
+                            <div class="sub-question" data-sub-question-id="q${questionCounter}_${subIndex}">
+                                <div class="sub-question-text">${sub.text}</div>
+                                <div class="tf-options">
+                                    <label class="option">
+                                        <input type="radio" name="q${questionCounter}_${subIndex}" value="true">
+                                        <span class="checkmark"></span>
+                                        <span>Đúng</span>
+                                    </label>
+                                    <label class="option">
+                                        <input type="radio" name="q${questionCounter}_${subIndex}" value="false">
+                                        <span class="checkmark"></span>
+                                        <span>Sai</span>
+                                    </label>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    questionHtml += subQuestionsHtml;
+                } else if (q.type === 'short-answer') {
+                    totalPoints++;
+                    questionHtml += `
+                        <div class="short-answer-container">
+                            <input type="text" name="q${questionCounter}" placeholder="Nhập đáp án...">
+                            <span class="correct-answer-display"></span>
+                        </div>
+                    `;
+                }
+                questionHtml += `</div>`;
+                output.push(questionHtml);
+            });
+        });
+        quizForm.innerHTML = output.join('');
+    }
+
+    function showResults() {
+        clearInterval(timerInterval);
+        let score = 0;
+        let questionCounter = 0;
+
+        quizData.forEach(partData => {
+            partData.questions.forEach(q => {
+                questionCounter++;
+                const questionBlock = quizForm.querySelector(`[data-question-id="q${questionCounter}"]`);
+                let isAnswered = true;
+
+                if (q.type === 'mc') {
+                    const userAnswerNode = quizForm.querySelector(`input[name="q${questionCounter}"]:checked`);
+                    const allOptions = quizForm.querySelectorAll(`input[name="q${questionCounter}"]`);
+                    
+                    let correctNode = null;
+                    allOptions.forEach(optionNode => {
+                        if (optionNode.value === q.answer) {
+                            correctNode = optionNode;
+                        }
+                    });
+
+                    if (userAnswerNode) {
+                        const userLabel = userAnswerNode.parentElement;
+                        if (userAnswerNode.value === q.answer) {
+                            score++;
+                            userLabel.classList.add('correct');
+                        } else {
+                            userLabel.classList.add('incorrect');
+                            if (correctNode) correctNode.parentElement.classList.add('correct');
+                        }
+                    } else {
+                        isAnswered = false;
+                        if (correctNode) correctNode.parentElement.classList.add('correct');
+                    }
+                } else if (q.type === 'true-false') {
+                    let allSubAnswered = true;
+                    q.sub_questions.forEach((sub, subIndex) => {
+                        const userAnswerNode = quizForm.querySelector(`input[name="q${questionCounter}_${subIndex}"]:checked`);
+                        const correctNode = quizForm.querySelector(`input[name="q${questionCounter}_${subIndex}"][value="${String(sub.answer)}"]`);
+                        
+                        if (userAnswerNode) {
+                            const userLabel = userAnswerNode.parentElement;
+                            if (userAnswerNode.value === String(sub.answer)) {
+                                score++;
+                                userLabel.classList.add('correct');
+                            } else {
+                                userLabel.classList.add('incorrect');
+                                if (correctNode) correctNode.parentElement.classList.add('correct');
+                            }
+                        } else {
+                            allSubAnswered = false;
+                            if (correctNode) correctNode.parentElement.classList.add('correct');
+                        }
+                    });
+                    if (!allSubAnswered) isAnswered = false;
+
+                } else if (q.type === 'short-answer') {
+                    const input = quizForm.querySelector(`input[name="q${questionCounter}"]`);
+                    if (input.value.trim() === '') {
+                        isAnswered = false;
+                    }
+                    const userAnswer = parseFloat(input.value.replace(',', '.'));
+                    const correctAnswer = q.answer;
+                    const tolerance = Math.abs(correctAnswer * 0.01) + 0.001;
+
+                    if (!isNaN(userAnswer) && Math.abs(userAnswer - correctAnswer) <= tolerance) {
+                        score++;
+                        input.classList.add('correct');
+                    } else {
+                        input.classList.add('incorrect');
+                        const display = input.nextElementSibling;
+                        display.textContent = `Đáp án đúng: ${correctAnswer}`;
+                        display.style.display = 'block';
+                    }
+                }
+                
+                if (!isAnswered) {
+                    const titleElement = questionBlock.querySelector('.question-title');
+                    if (!titleElement.querySelector('.unanswered-mark')) {
+                        const unansweredMark = document.createElement('span');
+                        unansweredMark.className = 'unanswered-mark';
+                        unansweredMark.textContent = '✗';
+                        titleElement.appendChild(unansweredMark);
+                    }
+                }
+            });
+        });
+        
+        resultsContainer.innerHTML = `Điểm của bạn: ${score} / ${totalPoints}`;
+        resultsContainer.style.display = 'block';
+        submitButton.disabled = true;
+        quizForm.querySelectorAll('input').forEach(input => input.disabled = true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function startTimer() {
+        let time = 45 * 60;
+        timerInterval = setInterval(() => {
+            const minutes = Math.floor(time / 60);
+            let seconds = time % 60;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            timerElement.textContent = `${minutes}:${seconds}`;
+            
+            if (time <= 300 && !timerElement.classList.contains('low-time')) {
+                timerElement.classList.add('low-time');
+            }
+            
+            if (time < 0) {
+                clearInterval(timerInterval);
+                alert("Hết giờ! Bài của bạn sẽ được nộp tự động.");
+                showResults();
+            } else {
+                time--;
+            }
+        }, 1000);
+    }
+
+    buildQuiz();
+    startTimer();
+
+    submitButton.addEventListener('click', showResults);
+    retryButton.addEventListener('click', () => location.reload());
+});
+</script>
+
+</body>
+</html>
